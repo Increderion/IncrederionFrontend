@@ -22,7 +22,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="font-mono mb-10 max-w-lg text-sm leading-relaxed text-[#9C99A6]">
-            Increderion to szybkie narzędzie do weryfikacji firm — wyszukuj po nazwie, NIP lub KRS i uzyskaj kluczowe informacje w kilka sekund.
+            Increderion to zaawansowane narzędzie do weryfikacji firm — wykrywa pranie pieniędzy, podejrzane powiązania kapitałowe i anomalie finansowe przy użyciu złożonych algorytmów analizy ryzyka.
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row">
@@ -37,15 +37,15 @@ export default function LandingPage() {
 
           <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-3 max-w-2xl w-full">
             {[
-              { label: "Wyszukiwanie po nazwie", desc: "Znajdź firmę wpisując jej pełną lub częściową nazwę" },
-              { label: "Weryfikacja NIP / KRS", desc: "Szybka weryfikacja numeru identyfikacyjnego" },
-              { label: "Szczegółowe dane", desc: "Adres, status, forma prawna i więcej" },
+              { label: "Wykrywanie prania pieniędzy", desc: "Algorytmy AML analizują sieci powiązań kapitałowych i wzorce transakcyjne w czasie rzeczywistym" },
+              { label: "Analiza ryzyka finansowego", desc: "Złożone modele scoringowe oceniają wiarygodność firmy na podstawie setek wskaźników" },
+              { label: "Podejrzane powiązania", desc: "Automatyczna detekcja struktur korporacyjnych typowych dla oszustw i wyłudzeń VAT" },
             ].map((item) => (
               <div
                 key={item.label}
-                className="rounded-lg border border-[#E4E2EC] bg-white/60 p-5 text-left backdrop-blur-sm"
+                className="group rounded-lg border border-[#E4E2EC] bg-white/60 p-5 text-left backdrop-blur-sm transition-all duration-200 hover:border-[#92140C]/30 hover:bg-white/80 hover:shadow-md hover:-translate-y-0.5 cursor-default"
               >
-                <p className="font-mono mb-1 text-sm font-semibold text-[#1C1819]">{item.label}</p>
+                <p className="font-mono mb-1 text-sm font-semibold text-[#1C1819] transition-colors group-hover:text-[#92140C]">{item.label}</p>
                 <p className="font-mono text-xs leading-relaxed text-[#9C99A6]">{item.desc}</p>
               </div>
             ))}
