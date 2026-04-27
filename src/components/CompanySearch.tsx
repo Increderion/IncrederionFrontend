@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCompanySearch, type Company } from "../api/companies";
+import { fetchCompanySearch, type CompanyRow } from "../api/companies";
+import { AuthContext } from "../auth-context";
 
 export default function CompanySearch() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Company[]>([]);
+  const [results, setResults] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -12,6 +13,7 @@ export default function CompanySearch() {
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
 
   const showResults = focused && query.trim().length >= 2;
 
@@ -19,6 +21,12 @@ export default function CompanySearch() {
     if (query.trim().length < 2) {
       setResults([]);
       setActiveIndex(-1);
+      setLoading(false);
+      return;
+    }
+
+    if (!auth?.loggedIn) {
+      setResults([]);
       setLoading(false);
       return;
     }
@@ -32,7 +40,7 @@ export default function CompanySearch() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, auth?.loggedIn]);
 
   useEffect(() => {
     if (activeIndex < 0 || !listRef.current) return;
@@ -50,7 +58,7 @@ export default function CompanySearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function handleSelect(company: Company) {
+  function handleSelect(company: CompanyRow) {
     setFocused(false);
     navigate(`/firma/${company.id}`);
   }
@@ -71,6 +79,12 @@ export default function CompanySearch() {
     } else if (e.key === "Escape") {
       setFocused(false);
     }
+  }
+
+  function syncStatusBadge(status: string) {
+    if (status === "ok") return { label: "Aktywna", cls: "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400", dot: "bg-emerald-500" };
+    if (status === "error") return { label: "Błąd", cls: "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400", dot: "bg-red-500" };
+    return { label: "W trakcie", cls: "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400", dot: "bg-amber-400" };
   }
 
   return (
@@ -105,8 +119,13 @@ export default function CompanySearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Wpisz nazwę firmy, NIP lub KRS..."
-          className="flex-1 bg-transparent text-base text-[#1C1819] dark:text-[#F0EFF4] placeholder:text-[#9C99A6] dark:placeholder:text-[#6E6B78] outline-none font-mono"
+          placeholder={
+            auth?.loggedIn
+              ? "Wpisz nazwę firmy, NIP lub KRS..."
+              : "Zaloguj się, aby wyszukiwać firmy..."
+          }
+          disabled={!auth?.loggedIn}
+          className="flex-1 bg-transparent text-base text-[#1C1819] dark:text-[#F0EFF4] placeholder:text-[#9C99A6] dark:placeholder:text-[#6E6B78] outline-none font-mono disabled:cursor-not-allowed"
           autoComplete="off"
           spellCheck={false}
         />
@@ -131,44 +150,49 @@ export default function CompanySearch() {
             </div>
           ) : (
             <ul ref={listRef} className="max-h-[400px] overflow-y-auto">
-              {results.map((company, i) => (
-                <li key={company.id}>
-                  <button
-                    onClick={() => handleSelect(company)}
-                    className={`w-full text-left px-5 py-4 flex items-start gap-4 transition-colors ${
-                      i !== 0 ? "border-t border-[#F0EFF4] dark:border-[#2E2A38]" : ""
-                    } ${activeIndex === i ? "bg-[#F7F6FB] dark:bg-[#242130]" : "hover:bg-[#F7F6FB] dark:hover:bg-[#242130]"}`}
-                  >
-                    <div className="mt-0.5 shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0EFF4] dark:bg-[#2A2730]">
-                      <svg className="h-4 w-4 text-[#92140C]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                      </svg>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-mono font-semibold text-sm text-[#1C1819] dark:text-[#F0EFF4] truncate">{company.name}</p>
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
-                        <span className="font-mono text-xs text-[#9C99A6]">
-                          NIP: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.nip}</span>
-                        </span>
-                        <span className="font-mono text-xs text-[#9C99A6]">
-                          KRS: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.krs}</span>
-                        </span>
-                        <span className="font-mono text-xs text-[#9C99A6]">{company.city}</span>
+              {results.map((company, i) => {
+                const badge = syncStatusBadge(company.registry_sync_status);
+                return (
+                  <li key={company.id}>
+                    <button
+                      onClick={() => handleSelect(company)}
+                      className={`w-full text-left px-5 py-4 flex items-start gap-4 transition-colors ${
+                        i !== 0 ? "border-t border-[#F0EFF4] dark:border-[#2E2A38]" : ""
+                      } ${activeIndex === i ? "bg-[#F7F6FB] dark:bg-[#242130]" : "hover:bg-[#F7F6FB] dark:hover:bg-[#242130]"}`}
+                    >
+                      <div className="mt-0.5 shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0EFF4] dark:bg-[#2A2730]">
+                        <svg className="h-4 w-4 text-[#92140C]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                        </svg>
                       </div>
-                    </div>
-                    <div className="shrink-0 self-center">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-mono font-medium ${
-                        company.status === "active"
-                          ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                          : "bg-[#F0EFF4] dark:bg-[#2A2730] text-[#9C99A6] dark:text-[#6E6B78]"
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${company.status === "active" ? "bg-emerald-500" : "bg-[#9C99A6] dark:bg-[#6E6B78]"}`} />
-                        {company.status === "active" ? "Aktywna" : "Nieaktywna"}
-                      </span>
-                    </div>
-                  </button>
-                </li>
-              ))}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-mono font-semibold text-sm text-[#1C1819] dark:text-[#F0EFF4] truncate">{company.name}</p>
+                        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
+                          {company.nip && (
+                            <span className="font-mono text-xs text-[#9C99A6]">
+                              NIP: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.nip}</span>
+                            </span>
+                          )}
+                          {company.krs && (
+                            <span className="font-mono text-xs text-[#9C99A6]">
+                              KRS: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.krs}</span>
+                            </span>
+                          )}
+                          {company.legal_form && (
+                            <span className="font-mono text-xs text-[#9C99A6]">{company.legal_form}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="shrink-0 self-center">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-mono font-medium ${badge.cls}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${badge.dot}`} />
+                          {badge.label}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
