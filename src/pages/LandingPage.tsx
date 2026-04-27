@@ -16,7 +16,7 @@ export default function LandingPage() {
             Rejestr polskich firm
           </p>
 
-          <h1 className="font-mono mb-6 max-w-2xl text-4xl font-bold leading-tight tracking-tight text-[#1C1819] dark:text-[#F0EFF4] sm:text-5xl">
+          <h1 className="font-mono mb-6 max-w-2xl text-4xl font-bold leading-tight tracking-tight text-[#1C1819] sm:text-5xl">
             Sprawdź wiarygodność<br />
             każdej firmy w Polsce
           </h1>
@@ -43,10 +43,10 @@ export default function LandingPage() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="group rounded-lg border border-[#E4E2EC] dark:border-[#2E2A38] bg-white/60 dark:bg-[#1C1A22]/70 p-5 text-left backdrop-blur-sm transition-all duration-200 hover:border-[#92140C]/30 hover:bg-white/80 dark:hover:bg-[#242130]/80 hover:shadow-md hover:-translate-y-0.5 cursor-default"
+                className="group rounded-lg border border-[#E4E2EC] bg-white/60 p-5 text-left backdrop-blur-sm transition-all duration-200 hover:border-[#92140C]/30 hover:bg-white/80 hover:shadow-md hover:-translate-y-0.5 cursor-default"
               >
-                <p className="font-mono mb-1 text-sm font-semibold text-[#1C1819] dark:text-[#F0EFF4] transition-colors group-hover:text-[#92140C]">{item.label}</p>
-                <p className="font-mono text-xs leading-relaxed text-[#9C99A6] dark:text-[#6E6B78]">{item.desc}</p>
+                <p className="font-mono mb-1 text-sm font-semibold text-[#1C1819] transition-colors group-hover:text-[#92140C]">{item.label}</p>
+                <p className="font-mono text-xs leading-relaxed text-[#9C99A6]">{item.desc}</p>
               </div>
             ))}
           </div>

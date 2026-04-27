@@ -49,21 +49,23 @@ export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterCli
       </button>
 
       {isMenuOpen && (
-        <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-[#D8D6E0] dark:border-[#2E2A30] bg-[#F0EFF4] dark:bg-[#1C1819] shadow-md">
-          <a
-            href="/settings"
-            className="font-mono block px-4 py-2.5 text-sm text-[#1C1819] dark:text-[#F0EFF4] hover:bg-[#E4E2EC] dark:hover:bg-[#2E2A30] transition-colors"
-          >
-            Ustawienia
-          </a>
-          <div className="mx-3 h-px bg-[#D8D6E0] dark:bg-[#2E2A30]" />
+        <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-[#D8D6E0] bg-[#F0EFF4] shadow-md">
           {loggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#92140C] hover:bg-[#E4E2EC] dark:hover:bg-[#2E2A30] transition-colors"
-            >
-              Wyloguj się
-            </button>
+            <>
+              <a
+                href="/settings"
+                className="font-mono block px-4 py-2.5 text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
+              >
+                Ustawienia
+              </a>
+              <div className="mx-3 h-px bg-[#D8D6E0]" />
+              <button
+                onClick={handleLogout}
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#92140C] hover:bg-[#E4E2EC] transition-colors"
+              >
+                Wyloguj się
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -71,17 +73,17 @@ export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterCli
                   setIsMenuOpen(false);
                   onLoginClick();
                 }}
-                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] dark:text-[#F0EFF4] hover:bg-[#E4E2EC] dark:hover:bg-[#2E2A30] transition-colors"
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
               >
                 Logowanie
               </button>
-              <div className="mx-3 h-px bg-[#D8D6E0] dark:bg-[#2E2A30]" />
+              <div className="mx-3 h-px bg-[#D8D6E0]" />
               <button
                 onClick={() => {
                   setIsMenuOpen(false);
                   onRegisterClick();
                 }}
-                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] dark:text-[#F0EFF4] hover:bg-[#E4E2EC] dark:hover:bg-[#2E2A30] transition-colors"
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
               >
                 Rejestracja
               </button>
