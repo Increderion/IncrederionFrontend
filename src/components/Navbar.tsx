@@ -22,7 +22,7 @@ export default function Navbar({ loggedIn = false }: NavbarProps) {
 
   return (
     <>
-      <nav className="font-mono sticky top-0 z-50 w-full border-b border-[#D8D6E0] bg-[#F0EFF4]/95 shadow-sm backdrop-blur-xl">
+      <nav className="font-mono sticky top-0 z-50 w-full border-b border-[#D8D6E0] dark:border-[#2E2A30] bg-[#F0EFF4]/95 dark:bg-[#111013]/95 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
             <a href="/" className="italic text-xl font-semibold tracking-tight text-[#92140C]">
@@ -31,7 +31,7 @@ export default function Navbar({ loggedIn = false }: NavbarProps) {
 
             <a
               href="/rejestr"
-              className="relative text-sm font-medium text-[#1C1819]/70 transition-colors hover:text-[#1C1819] after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 after:bg-[#92140C] after:transition-all hover:after:w-full"
+              className="relative text-sm font-medium text-[#1C1819]/70 dark:text-[#F0EFF4]/70 transition-colors hover:text-[#1C1819] dark:hover:text-[#F0EFF4] after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 after:bg-[#92140C] after:transition-all hover:after:w-full"
             >
               Rejestr
             </a>

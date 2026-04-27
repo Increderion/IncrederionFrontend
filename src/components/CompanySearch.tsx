@@ -76,10 +76,10 @@ export default function CompanySearch() {
   return (
     <div ref={containerRef} className="relative w-full max-w-2xl mx-auto">
       <div
-        className={`flex items-center gap-3 rounded-2xl border-2 bg-white px-5 py-4 shadow-lg transition-all ${
+        className={`flex items-center gap-3 rounded-2xl border-2 bg-white dark:bg-[#1C1A22] px-5 py-4 shadow-lg transition-all ${
           focused
             ? "border-[#92140C] shadow-[#92140C]/10 shadow-xl"
-            : "border-[#E5E3EC] hover:border-[#92140C]/40"
+            : "border-[#E5E3EC] dark:border-[#2E2A38] hover:border-[#92140C]/40"
         }`}
       >
         {loading ? (
@@ -106,14 +106,14 @@ export default function CompanySearch() {
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
           placeholder="Wpisz nazwę firmy, NIP lub KRS..."
-          className="flex-1 bg-transparent text-base text-[#1C1819] placeholder:text-[#9C99A6] outline-none font-mono"
+          className="flex-1 bg-transparent text-base text-[#1C1819] dark:text-[#F0EFF4] placeholder:text-[#9C99A6] dark:placeholder:text-[#6E6B78] outline-none font-mono"
           autoComplete="off"
           spellCheck={false}
         />
         {query && (
           <button
             onClick={() => { setQuery(""); inputRef.current?.focus(); }}
-            className="shrink-0 text-[#9C99A6] hover:text-[#1C1819] transition-colors"
+            className="shrink-0 text-[#9C99A6] hover:text-[#1C1819] dark:hover:text-[#F0EFF4] transition-colors"
             tabIndex={-1}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -124,10 +124,10 @@ export default function CompanySearch() {
       </div>
 
       {showResults && !loading && (
-        <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-[#E5E3EC] bg-white shadow-2xl shadow-black/10 overflow-hidden z-50">
+        <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white dark:bg-[#1C1A22] shadow-2xl shadow-black/10 overflow-hidden z-50">
           {results.length === 0 ? (
-            <div className="px-5 py-8 text-center font-mono text-sm text-[#9C99A6]">
-              Brak wyników dla&nbsp;<span className="text-[#1C1819] font-medium">"{query}"</span>
+            <div className="px-5 py-8 text-center font-mono text-sm text-[#9C99A6] dark:text-[#6E6B78]">
+              Brak wyników dla&nbsp;<span className="text-[#1C1819] dark:text-[#F0EFF4] font-medium">"{query}"</span>
             </div>
           ) : (
             <ul ref={listRef} className="max-h-[400px] overflow-y-auto">
@@ -136,22 +136,22 @@ export default function CompanySearch() {
                   <button
                     onClick={() => handleSelect(company)}
                     className={`w-full text-left px-5 py-4 flex items-start gap-4 transition-colors ${
-                      i !== 0 ? "border-t border-[#F0EFF4]" : ""
-                    } ${activeIndex === i ? "bg-[#F7F6FB]" : "hover:bg-[#F7F6FB]"}`}
+                      i !== 0 ? "border-t border-[#F0EFF4] dark:border-[#2E2A38]" : ""
+                    } ${activeIndex === i ? "bg-[#F7F6FB] dark:bg-[#242130]" : "hover:bg-[#F7F6FB] dark:hover:bg-[#242130]"}`}
                   >
-                    <div className="mt-0.5 shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0EFF4]">
+                    <div className="mt-0.5 shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-[#F0EFF4] dark:bg-[#2A2730]">
                       <svg className="h-4 w-4 text-[#92140C]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-mono font-semibold text-sm text-[#1C1819] truncate">{company.name}</p>
+                      <p className="font-mono font-semibold text-sm text-[#1C1819] dark:text-[#F0EFF4] truncate">{company.name}</p>
                       <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
                         <span className="font-mono text-xs text-[#9C99A6]">
-                          NIP: <span className="text-[#5C5867]">{company.nip}</span>
+                          NIP: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.nip}</span>
                         </span>
                         <span className="font-mono text-xs text-[#9C99A6]">
-                          KRS: <span className="text-[#5C5867]">{company.krs}</span>
+                          KRS: <span className="text-[#5C5867] dark:text-[#9C99A6]">{company.krs}</span>
                         </span>
                         <span className="font-mono text-xs text-[#9C99A6]">{company.city}</span>
                       </div>
@@ -159,10 +159,10 @@ export default function CompanySearch() {
                     <div className="shrink-0 self-center">
                       <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-mono font-medium ${
                         company.status === "active"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                          : "bg-[#F0EFF4] dark:bg-[#2A2730] text-[#9C99A6] dark:text-[#6E6B78]"
                       }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${company.status === "active" ? "bg-emerald-500" : "bg-gray-400"}`} />
+                        <span className={`h-1.5 w-1.5 rounded-full ${company.status === "active" ? "bg-emerald-500" : "bg-[#9C99A6] dark:bg-[#6E6B78]"}`} />
                         {company.status === "active" ? "Aktywna" : "Nieaktywna"}
                       </span>
                     </div>
