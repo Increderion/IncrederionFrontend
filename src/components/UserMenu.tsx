@@ -49,18 +49,19 @@ export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterCli
       </button>
 
       {isMenuOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-[#D8D6E0] bg-[#F0EFF4] shadow-md">
           {loggedIn ? (
             <>
               <a
                 href="/settings"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="font-mono block px-4 py-2.5 text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
               >
-                Settings
+                Ustawienia
               </a>
+              <div className="mx-3 h-px bg-[#D8D6E0]" />
               <button
                 onClick={handleLogout}
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#92140C] hover:bg-[#E4E2EC] transition-colors"
               >
                 Wyloguj się
               </button>
@@ -72,16 +73,17 @@ export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterCli
                   setIsMenuOpen(false);
                   onLoginClick();
                 }}
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
               >
                 Logowanie
               </button>
+              <div className="mx-3 h-px bg-[#D8D6E0]" />
               <button
                 onClick={() => {
                   setIsMenuOpen(false);
                   onRegisterClick();
                 }}
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                className="font-mono block w-full px-4 py-2.5 text-left text-sm text-[#1C1819] hover:bg-[#E4E2EC] transition-colors"
               >
                 Rejestracja
               </button>

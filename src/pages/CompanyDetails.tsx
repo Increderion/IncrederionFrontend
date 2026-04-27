@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../auth-context";
 import Navbar from "../components/Navbar";
 import LoadingBar from "../components/LoadingBar";
+import PageBackground from "../components/PageBackground";
 import { fetchCompanyById } from "../api/companies";
 
 export default function CompanyDetails() {
@@ -22,6 +23,7 @@ export default function CompanyDetails() {
     <>
       <LoadingBar loading={loading} />
       <Navbar loggedIn={auth?.loggedIn ?? false} />
+      <PageBackground />
     </>
   );
 }
