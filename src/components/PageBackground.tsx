@@ -6,7 +6,7 @@ interface PageBackgroundProps {
 export default function PageBackground({ children, className = "" }: PageBackgroundProps) {
   return (
     <div
-      className={`relative min-h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-br from-[#F3EFF6] via-[#F1EEF3] to-[#F6F0ED] ${className}`}
+      className={`relative min-h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-br from-[#F3EFF6] via-[#F1EEF3] to-[#F6F0ED] dark:from-[#111013] dark:via-[#141217] dark:to-[#16121A] ${className}`}
     >
       <div className="pointer-events-none absolute inset-0 z-[1] opacity-[0.35] noise-texture" />
 

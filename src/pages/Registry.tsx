@@ -16,7 +16,7 @@ export default function Registry() {
             <p className="font-mono mb-4 text-xs font-medium uppercase tracking-widest text-[#92140C]">
               Baza danych firm
             </p>
-            <h1 className="font-mono text-4xl font-bold tracking-tight text-[#1C1819] mb-3">
+            <h1 className="font-mono text-4xl font-bold tracking-tight text-[#1C1819] dark:text-[#F0EFF4] mb-3">
               Rejestr
             </h1>
             <p className="font-mono text-sm text-[#9C99A6] mb-10 max-w-md mx-auto leading-relaxed">
