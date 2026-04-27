@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../auth-context";
 import Navbar from "../components/Navbar";
+import PageBackground from "../components/PageBackground";
 
 export default function LandingPage() {
   const auth = useContext(AuthContext);
@@ -9,18 +10,8 @@ export default function LandingPage() {
     <>
       <Navbar loggedIn={auth?.loggedIn ?? false} />
 
-      <main className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[#F0EFF4]">
-        {/* decorative circles */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-[#D8D6E0]/50 blur-3xl" />
-          <div className="absolute top-1/4 -right-40 h-[520px] w-[520px] rounded-full bg-[#C8C6D4]/40 blur-3xl" />
-          <div className="absolute bottom-0 left-1/3 h-[360px] w-[360px] rounded-full bg-[#D8D6E0]/45 blur-3xl" />
-          <div className="absolute -bottom-24 -right-16 h-[300px] w-[300px] rounded-full bg-[#BCBAC9]/35 blur-2xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#E4E2EC]/30 blur-3xl" />
-        </div>
-
-        {/* content */}
-        <div className="relative z-10 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 text-center">
+      <PageBackground>
+        <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 text-center">
           <p className="font-mono mb-4 text-xs font-medium uppercase tracking-widest text-[#92140C]">
             Rejestr polskich firm
           </p>
@@ -60,7 +51,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </main>
+      </PageBackground>
     </>
   );
 }
