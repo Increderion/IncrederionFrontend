@@ -1,6 +1,7 @@
 import { useState } from "react";
 import UserMenu from "./UserMenu";
 import AuthModal from "./AuthModal";
+import logo from "/logo.svg";
 
 interface NavbarProps {
   loggedIn?: boolean;
@@ -25,7 +26,8 @@ export default function Navbar({ loggedIn = false }: NavbarProps) {
       <nav className="font-mono sticky top-0 z-50 w-full border-b border-[#D8D6E0] dark:border-[#2E2A30] bg-[#F0EFF4]/95 dark:bg-[#111013]/95 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
-            <a href="/" className="italic text-xl font-semibold tracking-tight text-[#92140C]">
+            <a href="/" className="italic text-xl font-semibold tracking-tight text-[#92140C] flex items-center">
+              <img src={logo} alt="logo" className="w-10 h-10 mr-4" />
               Increderion
             </a>
 
