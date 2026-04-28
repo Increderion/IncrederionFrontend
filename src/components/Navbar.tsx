@@ -37,6 +37,13 @@ export default function Navbar({ loggedIn = false }: NavbarProps) {
             >
               Rejestr
             </a>
+            <a
+              href="/biblioteka"
+              className="relative text-sm font-medium text-[#1C1819]/70 dark:text-[#F0EFF4]/70 transition-colors hover:text-[#1C1819] dark:hover:text-[#F0EFF4] after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 after:bg-[#92140C] after:transition-all hover:after:w-full"
+            >
+              Biblioteka
+            </a>
+
           </div>
 
           <UserMenu

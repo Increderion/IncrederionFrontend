@@ -6,6 +6,7 @@ import Registry from "./pages/Registry";
 import Settings from "./pages/Settings";
 import CompanyDetails from "./pages/CompanyDetails";
 import ReportDetails from "./pages/ReportDetails";
+import ReportsLibrary from "./pages/ReportsLibrary";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/rejestr" element={<Registry />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/biblioteka" element={<ReportsLibrary />} />
         <Route path="/firma/:id" element={<CompanyDetails />} />
         <Route path="/raport/:id" element={<ReportDetails />} />
       </Routes>

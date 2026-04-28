@@ -7,7 +7,8 @@ import { createReport } from "../api/reports";
 export default function CompanySearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CompanyRow[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [autocompleteLoading, setAutocompleteLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [focused, setFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -22,22 +23,23 @@ export default function CompanySearch() {
     if (query.trim().length < 2) {
       setResults([]);
       setActiveIndex(-1);
-      setLoading(false);
+      setAutocompleteLoading(false);
       return;
     }
 
     if (!auth?.loggedIn) {
       setResults([]);
-      setLoading(false);
+      setAutocompleteLoading(false);
       return;
     }
 
-    setLoading(true);
+    setAutocompleteLoading(true);
     const timer = setTimeout(() => {
+      console.log("[CompanySearch] fetching autocomplete for:", query);
       fetchCompanySearch(query)
         .then((res) => { setResults(res); setActiveIndex(-1); })
-        .catch(() => setResults([]))
-        .finally(() => setLoading(false));
+        .catch((err) => { console.error("[CompanySearch] autocomplete error:", err); setResults([]); })
+        .finally(() => setAutocompleteLoading(false));
     }, 300);
 
     return () => clearTimeout(timer);
@@ -60,22 +62,31 @@ export default function CompanySearch() {
   }, []);
 
   async function handleSearch(searchQuery: string) {
-    if (!searchQuery.trim() || loading) return;
-    setLoading(true);
+    if (!searchQuery.trim() || searchLoading) return;
+    
+    if (!auth?.loggedIn) {
+       alert("Zaloguj się, aby rozpocząć proces researchu KYC.");
+       return;
+    }
+
+    console.log("[CompanySearch] triggering search for:", searchQuery);
+    setSearchLoading(true);
     try {
       const { reportId } = await createReport(searchQuery);
+      console.log("[CompanySearch] search successful, reportId:", reportId);
       navigate(`/raport/${reportId}`);
     } catch (err) {
-      console.error("Search failed:", err);
+      console.error("[CompanySearch] search failed:", err);
+      alert("Wystąpił błąd podczas uruchamiania analizy. Sprawdź połączenie z serwerem.");
     } finally {
-      setLoading(false);
+      setSearchLoading(false);
     }
   }
 
   function handleSelect(company: CompanyRow) {
+    setQuery(company.name);
     setFocused(false);
-    // When selecting a company, we still want to trigger the full KYC research
-    handleSearch(company.name);
+    setActiveIndex(-1);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -95,8 +106,6 @@ export default function CompanySearch() {
       e.preventDefault();
       if (showResults && activeIndex >= 0) {
         handleSelect(results[activeIndex]);
-      } else {
-        handleSearch(query);
       }
     } else if (e.key === "Escape") {
       setFocused(false);
@@ -118,7 +127,7 @@ export default function CompanySearch() {
             : "border-[#E5E3EC] dark:border-[#2E2A38] hover:border-[#92140C]/40"
         }`}
       >
-        {loading ? (
+        {autocompleteLoading || searchLoading ? (
           <svg className="shrink-0 h-5 w-5 text-[#92140C] animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
@@ -141,13 +150,8 @@ export default function CompanySearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
-          placeholder={
-            auth?.loggedIn
-              ? "Wpisz nazwę firmy, NIP lub KRS..."
-              : "Zaloguj się, aby wyszukiwać firmy..."
-          }
-          disabled={!auth?.loggedIn}
-          className="flex-1 bg-transparent text-base text-[#1C1819] dark:text-[#F0EFF4] placeholder:text-[#9C99A6] dark:placeholder:text-[#6E6B78] outline-none font-mono disabled:cursor-not-allowed"
+          placeholder="Wpisz nazwę firmy, NIP lub KRS..."
+          className="flex-1 bg-transparent text-base text-[#1C1819] dark:text-[#F0EFF4] placeholder:text-[#9C99A6] dark:placeholder:text-[#6E6B78] outline-none font-mono"
           autoComplete="off"
           spellCheck={false}
         />
@@ -165,15 +169,17 @@ export default function CompanySearch() {
           )}
           <button
             onClick={() => handleSearch(query)}
-            disabled={!query.trim() || loading || !auth?.loggedIn}
+            disabled={!query.trim() || searchLoading}
             className="shrink-0 rounded-lg bg-[#92140C] px-4 py-2 text-xs font-mono font-bold text-white shadow-sm hover:bg-[#7a0f0a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             SZUKAJ
           </button>
+
         </div>
       </div>
 
-      {showResults && !loading && (
+
+      {showResults && !autocompleteLoading && (
         <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white dark:bg-[#1C1A22] shadow-2xl shadow-black/10 overflow-hidden z-50">
           {results.length === 0 ? (
             <div className="px-5 py-8 text-center font-mono text-sm text-[#9C99A6] dark:text-[#6E6B78]">

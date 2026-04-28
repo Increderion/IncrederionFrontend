@@ -28,15 +28,13 @@ function authHeaders(): HeadersInit {
 }
 
 export async function fetchCompanySearch(query: string): Promise<CompanyRow[]> {
-  const res = await fetch(`${API_BASE}/companies/search`, {
-    method: "POST",
+  const res = await fetch(`${API_BASE}/companies/autocomplete/${encodeURIComponent(query)}`, {
     headers: authHeaders(),
-    body: JSON.stringify({ query }),
   });
   if (!res.ok) return [];
-  const data: { company: CompanyRow; created: boolean } = await res.json();
-  return [data.company];
+  return res.json();
 }
+
 
 export async function fetchCompanyById(id: string): Promise<CompanyRow | null> {
   const res = await fetch(`${API_BASE}/companies/${encodeURIComponent(id)}`, {
