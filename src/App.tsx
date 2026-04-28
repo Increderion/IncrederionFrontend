@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import Registry from "./pages/Registry";
 import Settings from "./pages/Settings";
 import CompanyDetails from "./pages/CompanyDetails";
+import ReportDetails from "./pages/ReportDetails";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/rejestr" element={<Registry />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/firma/:id" element={<CompanyDetails />} />
+        <Route path="/raport/:id" element={<ReportDetails />} />
       </Routes>
       </AuthProvider>
     </ThemeProvider>

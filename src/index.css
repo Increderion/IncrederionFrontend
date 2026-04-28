@@ -8,3 +8,21 @@
   background-size: 200px 200px;
   mix-blend-mode: overlay;
 }
+
+@theme {
+  --font-mono: "Fira Code", monospace;
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(100%);
+    }
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite linear;
+}

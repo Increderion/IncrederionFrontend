@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCompanySearch, type CompanyRow } from "../api/companies";
 import { AuthContext } from "../auth-context";
+import { createReport } from "../api/reports";
 
 export default function CompanySearch() {
   const [query, setQuery] = useState("");
@@ -58,24 +59,45 @@ export default function CompanySearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  async function handleSearch(searchQuery: string) {
+    if (!searchQuery.trim() || loading) return;
+    setLoading(true);
+    try {
+      const { reportId } = await createReport(searchQuery);
+      navigate(`/raport/${reportId}`);
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function handleSelect(company: CompanyRow) {
     setFocused(false);
-    navigate(`/firma/${company.id}`);
+    // When selecting a company, we still want to trigger the full KYC research
+    handleSearch(company.name);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!showResults) return;
+    if (showResults) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(i + 1, results.length - 1));
+        return;
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(i - 1, 0));
+        return;
+      }
+    }
 
-    if (e.key === "ArrowDown") {
+    if (e.key === "Enter") {
       e.preventDefault();
-      setActiveIndex((i) => Math.min(i + 1, results.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      const target = activeIndex >= 0 ? results[activeIndex] : results.length === 1 ? results[0] : null;
-      if (target) handleSelect(target);
+      if (showResults && activeIndex >= 0) {
+        handleSelect(results[activeIndex]);
+      } else {
+        handleSearch(query);
+      }
     } else if (e.key === "Escape") {
       setFocused(false);
     }
@@ -129,17 +151,26 @@ export default function CompanySearch() {
           autoComplete="off"
           spellCheck={false}
         />
-        {query && (
+        <div className="flex items-center gap-2">
+          {query && (
+            <button
+              onClick={() => { setQuery(""); inputRef.current?.focus(); }}
+              className="shrink-0 text-[#9C99A6] hover:text-[#1C1819] dark:hover:text-[#F0EFF4] transition-colors p-1"
+              tabIndex={-1}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
           <button
-            onClick={() => { setQuery(""); inputRef.current?.focus(); }}
-            className="shrink-0 text-[#9C99A6] hover:text-[#1C1819] dark:hover:text-[#F0EFF4] transition-colors"
-            tabIndex={-1}
+            onClick={() => handleSearch(query)}
+            disabled={!query.trim() || loading || !auth?.loggedIn}
+            className="shrink-0 rounded-lg bg-[#92140C] px-4 py-2 text-xs font-mono font-bold text-white shadow-sm hover:bg-[#7a0f0a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            SZUKAJ
           </button>
-        )}
+        </div>
       </div>
 
       {showResults && !loading && (
