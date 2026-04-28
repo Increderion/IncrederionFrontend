@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface UserMenuProps {
   loggedIn?: boolean;
@@ -9,6 +10,7 @@ interface UserMenuProps {
 export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterClick }: UserMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -24,7 +26,9 @@ export default function UserMenu({ loggedIn = false, onLoginClick, onRegisterCli
     localStorage.removeItem("sb-access-token");
     setIsMenuOpen(false);
     window.dispatchEvent(new Event("storage"));
+    navigate("/");
   };
+
 
   return (
     <div className="relative" ref={menuRef}>
