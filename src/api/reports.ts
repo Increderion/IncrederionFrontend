@@ -61,10 +61,11 @@ export async function fetchReportById(id: string): Promise<ReportRow> {
   return res.json();
 }
 
-export async function fetchUserReports(): Promise<ReportRow[]> {
+export async function fetchUserReports(): Promise<{ data: ReportRow[]; total: number }> {
   const res = await fetch(`${API_BASE}/reports`, {
     headers: authHeaders(),
   });
   if (!res.ok) throw new Error("Failed to fetch reports");
   return res.json();
 }
+

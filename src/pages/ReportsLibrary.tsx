@@ -1,8 +1,7 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../auth-context";
 import Navbar from "../components/Navbar";
-import LoadingBar from "../components/LoadingBar";
 import PageBackground from "../components/PageBackground";
 import { fetchUserReports, type ReportRow } from "../api/reports";
 
@@ -13,103 +12,139 @@ export default function ReportsLibrary() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUserReports()
-      .then(setReports)
-      .catch(() => setError("Nie udało się pobrać listy raportów."))
-      .finally(() => setLoading(false));
+    async function load() {
+      try {
+        const { data } = await fetchUserReports();
+        setReports(data);
+      } catch (err) {
+        setError("Nie udało się pobrać listy raportów.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
   }, []);
 
   return (
     <>
-      <LoadingBar loading={loading} />
       <Navbar loggedIn={auth?.loggedIn ?? false} />
-      <PageBackground />
-
-      <main className="relative z-10 mx-auto max-w-5xl px-4 pt-8 pb-16">
-        <header className="mb-10 space-y-2">
-          <h1 className="font-mono text-3xl font-bold text-[#1C1819] dark:text-[#F0EFF4]">
-            Twoja Biblioteka Raportów
-          </h1>
-          <p className="font-mono text-sm text-[#9C99A6]">
-            Historia wszystkich przeprowadzonych analiz KYC/AML.
-          </p>
-        </header>
-
-        {loading && (
-          <div className="flex justify-center py-20">
-             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#92140C] border-t-transparent" />
+      
+      <PageBackground>
+        <main className="relative z-10 mx-auto max-w-6xl px-4 pt-12 pb-24">
+          {/* Header */}
+          <div className="mb-12 text-center md:text-left md:flex md:items-end md:justify-between">
+            <div>
+              <p className="font-mono mb-2 text-xs font-medium uppercase tracking-widest text-[#92140C]">
+                Twoja Historia
+              </p>
+              <h1 className="font-mono text-4xl font-bold tracking-tight text-[#1C1819] dark:text-[#F0EFF4]">
+                Biblioteka Raportów
+              </h1>
+            </div>
+            {!loading && reports.length > 0 && (
+              <p className="mt-4 md:mt-0 font-mono text-sm text-[#9C99A6]">
+                Znaleziono <span className="text-[#1C1819] dark:text-[#F0EFF4] font-bold">{reports.length}</span> analiz
+              </p>
+            )}
           </div>
-        )}
 
-        {!loading && error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center font-mono text-red-600">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && reports.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-[#E5E3EC] bg-white/50 dark:bg-[#1C1A22]/50 p-20 text-center">
-            <p className="font-mono text-[#9C99A6] mb-6">Nie masz jeszcze żadnych raportów.</p>
-            <Link
-              to="/"
-              className="inline-flex rounded-xl bg-[#92140C] px-6 py-3 font-mono text-sm font-bold text-white shadow-lg hover:bg-[#7a0f0a] transition-all"
-            >
-              PRZEPROWADŹ PIERWSZĄ ANALIZĘ
-            </Link>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reports.map((report) => (
-            <Link
-              key={report.id}
-              to={`/raport/${report.id}`}
-              className="group flex flex-col justify-between rounded-3xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white dark:bg-[#1C1A22] p-6 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest ${
-                    report.status === 'completed' ? 'bg-emerald-50 text-emerald-700' :
-                    report.status === 'failed' ? 'bg-red-50 text-red-700' :
-                    'bg-amber-50 text-amber-700'
-                  }`}>
-                    {report.status === 'completed' ? 'Gotowy' : 
-                     report.status === 'running' ? 'W toku' : 
-                     report.status === 'failed' ? 'Błąd' : 'Oczekiwanie'}
-                  </span>
-                  <span className="font-mono text-[10px] text-[#9C99A6]">
-                    {new Date(report.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <h3 className="font-mono text-lg font-bold text-[#1C1819] dark:text-[#F0EFF4] group-hover:text-[#92140C] transition-colors line-clamp-1">
-                  {report.company?.name || 'Analiza bez nazwy'}
-                </h3>
-                <p className="mt-2 font-mono text-xs text-[#9C99A6] line-clamp-2">
-                  {report.ai_summary || 'Analiza w trakcie przetwarzania...'}
-                </p>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-48 rounded-3xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white/50 dark:bg-[#1C1A22]/50 animate-pulse" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="rounded-3xl border border-red-200 bg-red-50 p-12 text-center">
+              <p className="font-mono text-red-600">{error}</p>
+              <button onClick={() => window.location.reload()} className="mt-4 font-mono text-xs font-bold text-[#92140C] underline">SPRÓBUJ PONOWNIE</button>
+            </div>
+          ) : reports.length === 0 ? (
+            <div className="rounded-3xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white/40 dark:bg-[#1C1A22]/40 p-20 text-center backdrop-blur-md">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EFF4] dark:bg-[#2A2730] text-[#9C99A6]">
+                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
               </div>
-              
-              <div className="mt-6 flex items-center justify-between">
-                <div className="flex -space-x-2">
-                  {(report.events_panels || []).slice(0, 3).map((_, i) => (
-                    <div key={i} className="h-6 w-6 rounded-full border-2 border-white dark:border-[#1C1A22] bg-[#F0EFF4] dark:bg-[#2A2730] flex items-center justify-center text-[10px]">
-                      🚩
+              <h3 className="font-mono text-lg font-bold text-[#1C1819] dark:text-[#F0EFF4]">Brak raportów</h3>
+              <p className="mt-2 font-mono text-sm text-[#9C99A6] max-w-sm mx-auto">
+                Nie przeprowadziłeś jeszcze żadnej analizy KYC. Wyszukaj firmę, aby rozpocząć pierwszy proces.
+              </p>
+              <Link
+                to="/rejestr"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#92140C] px-6 py-3 font-mono text-xs font-bold text-white shadow-lg hover:bg-[#7a0f0a] transition-all"
+              >
+                PRZEJDŹ DO WYSZUKIWARKI →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reports.map((report: any) => {
+                const company = report.companies || report.company;
+                return (
+                  <Link
+                    key={report.id}
+                    to={`/raport/${report.id}`}
+                    className="group relative flex flex-col rounded-3xl border border-[#E5E3EC] dark:border-[#2E2A38] bg-white dark:bg-[#1C1A22] p-6 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:border-[#92140C]/30"
+                  >
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-widest ${
+                        report.status === 'completed' ? 'bg-emerald-50 text-emerald-700' :
+                        report.status === 'failed' ? 'bg-red-50 text-red-700' :
+                        'bg-amber-50 text-amber-700 animate-pulse'
+                      }`}>
+                        {report.status === 'completed' ? 'Analiza zakończona' : 
+                         report.status === 'running' ? 'Research w toku' : 
+                         report.status === 'failed' ? 'Błąd krytyczny' : 'Oczekiwanie'}
+                      </span>
+                      <span className="font-mono text-[10px] text-[#9C99A6]">
+                        {new Date(report.created_at).toLocaleString('pl-PL', { dateStyle: 'short', timeStyle: 'short' })}
+                      </span>
                     </div>
-                  ))}
-                  {(report.events_panels?.length || 0) > 3 && (
-                    <div className="h-6 w-6 rounded-full border-2 border-white dark:border-[#1C1A22] bg-[#92140C] text-white flex items-center justify-center text-[8px] font-bold">
-                      +{(report.events_panels?.length || 0) - 3}
+
+                    <h3 className="mb-4 font-mono text-xl font-bold text-[#1C1819] dark:text-[#F0EFF4] group-hover:text-[#92140C] transition-colors line-clamp-2 min-h-[3.5rem]">
+                      {company?.name || "Brak nazwy"}
+                    </h3>
+
+                    <div className="mt-auto pt-4 border-t border-[#F0EFF4] dark:border-[#2E2A38]">
+                      <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+                        {company?.nip && (
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[8px] text-[#9C99A6] uppercase tracking-tighter">NIP</span>
+                            <span className="font-mono text-[11px] font-bold text-[#1C1819] dark:text-[#F0EFF4]">{company.nip}</span>
+                          </div>
+                        )}
+                        {company?.krs && (
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[8px] text-[#9C99A6] uppercase tracking-tighter">KRS</span>
+                            <span className="font-mono text-[11px] font-bold text-[#1C1819] dark:text-[#F0EFF4]">{company.krs}</span>
+                          </div>
+                        )}
+                        {company?.regon && (
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[8px] text-[#9C99A6] uppercase tracking-tighter">REGON</span>
+                            <span className="font-mono text-[11px] font-bold text-[#1C1819] dark:text-[#F0EFF4]">{company.regon}</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-4 flex items-center justify-between">
+                         <span className="font-mono text-[10px] font-bold text-[#92140C] group-hover:underline">OTWÓRZ RAPORT</span>
+                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F0EFF4] dark:bg-[#2A2730] text-[#92140C] group-hover:bg-[#92140C] group-hover:text-white transition-all">
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                          </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-                <span className="font-mono text-[10px] font-bold text-[#92140C] opacity-0 group-hover:opacity-100 transition-opacity">
-                  SZCZEGÓŁY →
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </main>
+                  </Link>
+                );
+              })}
+            </div>
+
+          )}
+        </main>
+      </PageBackground>
     </>
   );
 }
